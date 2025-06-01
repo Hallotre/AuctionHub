@@ -1,0 +1,108 @@
+/* 
+ * Tailwind CSS v4 - Main stylesheet
+ * This file uses Tailwind CSS directives like @apply, @layer, and @import
+ */
+@import "tailwindcss";
+
+/* Custom styles for the auction site */
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  
+  /* Ensure smooth scrolling and prevent horizontal overflow */
+  html {
+    @apply scroll-smooth;
+  }
+  
+  * {
+    @apply min-w-0; /* Prevent flex/grid items from overflowing */
+  }
+}
+
+@layer base {
+  button:not([disabled]), [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
+}
+
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-gray-900 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-md p-4 sm:p-6;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Responsive text utilities */
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-base {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+
+  /* Responsive spacing utilities */
+  .gap-responsive {
+    @apply gap-3 sm:gap-4 lg:gap-6;
+  }
+  
+  .p-responsive {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+  
+  .py-responsive {
+    @apply py-6 sm:py-8 lg:py-12;
+  }
+
+  /* Safe area utilities for mobile devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Touch-friendly target sizes */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+}
