@@ -5,7 +5,6 @@ import {
   HomeIcon, 
   PlusIcon, 
   UserIcon, 
-  ArrowRightOnRectangleIcon,
   MagnifyingGlassIcon,
   Bars3Icon,
   XMarkIcon,
@@ -17,13 +16,8 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-    setIsMobileMenuOpen(false);
-  };
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
@@ -34,10 +28,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Navigation Header */}
       <nav className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 shadow-lg border-b border-slate-600 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="grid grid-cols-3 items-center h-16">
             
-            {/* Logo Section */}
-            <div className="flex items-center flex-shrink-0">
+            {/* Logo Section - Left */}
+            <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2" onClick={closeMobileMenu}>
                 <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center shadow-md">
                   <span className="text-white font-bold text-sm">AH</span>
@@ -46,8 +40,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </Link>
             </div>
 
-            {/* Desktop Navigation Links */}
-            <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+            {/* Desktop Navigation Links - Center */}
+            <div className="hidden md:flex items-center justify-center space-x-6">
               <Link 
                 to="/" 
                 className="flex items-center px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-600/50 rounded-lg transition-all duration-200"
@@ -73,8 +67,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               )}
             </div>
 
-            {/* User Section */}
-            <div className="flex items-center space-x-3">
+            {/* User Section - Right */}
+            <div className="flex items-center justify-end space-x-3">
               
               {/* Credits Display (Desktop) */}
               {isAuthenticated && (
@@ -102,14 +96,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     )}
                     <span className="hidden lg:inline">{user?.name}</span>
                   </Link>
-                  <button 
-                    onClick={handleLogout}
-                    className="flex items-center px-2.5 py-2 text-sm font-medium text-slate-200 hover:text-red-300 hover:bg-red-600/20 rounded-lg transition-all duration-200"
-                    title="Logout"
-                  >
-                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
-                    <span className="hidden lg:inline ml-1.5">Logout</span>
-                  </button>
                 </div>
               ) : (
                 <div className="hidden md:flex items-center space-x-2">
@@ -213,13 +199,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       <UserIcon className="w-5 h-5 mr-3" />
                       My Profile
                     </Link>
-                    <button 
-                      onClick={handleLogout}
-                      className="flex items-center w-full px-4 py-3 text-base font-medium text-red-300 hover:text-red-200 hover:bg-red-600/20 rounded-lg transition-all"
-                    >
-                      <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
-                      Logout
-                    </button>
                   </div>
                 </>
               ) : (

@@ -23,7 +23,8 @@ import {
   ArrowUpIcon,
   Cog6ToothIcon,
   HomeIcon,
-  BanknotesIcon
+  BanknotesIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 
@@ -35,7 +36,7 @@ interface BidWithListing extends Bid {
 type TabType = 'overview' | 'dashboard' | 'bids' | 'listings' | 'settings';
 
 const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [userListings, setUserListings] = useState<Listing[]>([]);
   const [userBids, setUserBids] = useState<BidWithListing[]>([]);
@@ -897,6 +898,26 @@ const ProfilePage: React.FC = () => {
           <div>
             <div className="text-sm text-gray-600">Auctions Won</div>
             <div className="font-medium">{profile._count?.wins || 0}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Account Actions */}
+      <div className="card">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Actions</h3>
+        <div className="space-y-4">
+          <div className="border border-red-200 rounded-lg p-4 bg-red-50">
+            <h4 className="text-sm font-medium text-red-800 mb-2">Sign Out</h4>
+            <p className="text-sm text-red-600 mb-4">
+              Sign out of your account. You'll need to log in again to access your profile.
+            </p>
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-medium"
+            >
+              <ArrowRightOnRectangleIcon className="w-4 h-4" />
+              Sign Out
+            </button>
           </div>
         </div>
       </div>
