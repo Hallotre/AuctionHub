@@ -7,10 +7,6 @@ import {
   ClockIcon, 
   UserIcon, 
   CurrencyDollarIcon,
-  CalendarIcon,
-  TagIcon,
-  TrophyIcon,
-  ExclamationTriangleIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
 
@@ -120,19 +116,6 @@ const ListingDetailsPage: React.FC = () => {
     return new Date(listing.endsAt) <= new Date();
   };
 
-  const isOwnListing = () => {
-    return user && listing?.seller && user.name === listing.seller.name;
-  };
-
-  const getWinner = () => {
-    if (!isAuctionEnded() || !listing?.bids || listing.bids.length === 0) {
-      return null;
-    }
-    
-    const highestBid = Math.max(...listing.bids.map(bid => bid.amount));
-    return listing.bids.find(bid => bid.amount === highestBid);
-  };
-
   const getMinBidAmount = () => {
     const highestBid = getHighestBid();
     return highestBid + 1;
@@ -192,10 +175,6 @@ const ListingDetailsPage: React.FC = () => {
       </div>
     );
   }
-
-  const winner = getWinner();
-  const auctionEnded = isAuctionEnded();
-  const ownListing = isOwnListing();
 
   return (
     <div className="max-w-6xl mx-auto">
