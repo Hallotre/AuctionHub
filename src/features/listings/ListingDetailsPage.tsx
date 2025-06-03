@@ -63,8 +63,14 @@ const ListingDetailsPage: React.FC = () => {
       setBidError(null);
 
       const bidData: CreateBidData = { amount: bidAmount };
-      const response = await listingsService.placeBid(id, bidData);
-      setListing(response.data);
+      await listingsService.placeBid(id, bidData);
+      
+      // Refetch the complete listing data to ensure bid history is updated
+      const updatedListing = await listingsService.getListingById(id, {
+        _seller: true,
+        _bids: true
+      });
+      setListing(updatedListing.data);
       setBidAmount(0);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error && 'response' in err && 
@@ -148,19 +154,19 @@ const ListingDetailsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      <div className="flex items-center justify-center min-h-64">
+        <div className="w-12 h-12 border-b-2 rounded-full animate-spin border-emerald-600"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-600 mb-4">{error}</p>
+      <div className="py-12 text-center">
+        <p className="mb-4 text-red-600">{error}</p>
         <button 
           onClick={() => window.location.reload()} 
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+          className="px-6 py-3 font-semibold text-white transition-all rounded-lg bg-emerald-600 hover:bg-emerald-700"
         >
           Try Again
         </button>
@@ -170,7 +176,7 @@ const ListingDetailsPage: React.FC = () => {
 
   if (!listing) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <p className="text-gray-500">Listing not found.</p>
       </div>
     );
@@ -178,7 +184,7 @@ const ListingDetailsPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
         {/* Image Gallery */}
         <div className="space-y-4">
           {listing.media && listing.media.length > 0 ? (
@@ -188,7 +194,7 @@ const ListingDetailsPage: React.FC = () => {
               <img
                   src={listing.media[selectedImageIndex].url}
                   alt={listing.media[selectedImageIndex].alt || listing.title}
-                  className="w-full h-96 object-cover rounded-lg shadow-md border border-gray-200"
+                  className="object-cover w-full border border-gray-200 rounded-lg shadow-md h-96"
               />
               </div>
               
@@ -208,7 +214,7 @@ const ListingDetailsPage: React.FC = () => {
                       <img
                       src={media.url}
                         alt={media.alt || listing.title}
-                        className="w-full h-20 object-cover"
+                        className="object-cover w-full h-20"
                     />
                     </button>
                   ))}
@@ -216,9 +222,9 @@ const ListingDetailsPage: React.FC = () => {
               )}
             </>
           ) : (
-            <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+            <div className="flex items-center justify-center w-full bg-gray-100 border border-gray-200 rounded-lg h-96">
               <div className="text-center">
-                <PhotoIcon className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                <PhotoIcon className="w-16 h-16 mx-auto mb-2 text-gray-400" />
                 <p className="text-gray-500">No images available</p>
               </div>
             </div>
@@ -229,33 +235,33 @@ const ListingDetailsPage: React.FC = () => {
         <div className="space-y-6">
           {/* Title and Basic Info */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{listing.title}</h1>
+            <h1 className="mb-4 text-3xl font-bold text-gray-900">{listing.title}</h1>
             
             {listing.description && (
-              <p className="text-gray-700 leading-relaxed">{listing.description}</p>
+              <p className="leading-relaxed text-gray-700">{listing.description}</p>
             )}
           </div>
             
           {/* Seller Info */}
             {listing.seller && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">Seller</h3>
+            <div className="p-4 rounded-lg bg-gray-50">
+              <h3 className="mb-2 font-medium text-gray-900">Seller</h3>
               <div className="flex items-center gap-3">
                 {listing.seller.avatar?.url ? (
                   <img
                     src={listing.seller.avatar.url}
                     alt={listing.seller.avatar.alt || listing.seller.name}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500"
+                    className="object-cover w-10 h-10 border-2 rounded-full border-emerald-500"
                   />
                 ) : (
-                  <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-600">
                     <UserIcon className="w-6 h-6 text-white" />
                   </div>
                 )}
                 <div>
                   <Link
                     to={`/profile/${listing.seller.name}`}
-                    className="font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+                    className="font-medium transition-colors text-emerald-600 hover:text-emerald-700"
                   >
                     {listing.seller.name}
                   </Link>
@@ -268,13 +274,13 @@ const ListingDetailsPage: React.FC = () => {
             {/* Tags */}
             {listing.tags && listing.tags.length > 0 && (
             <div>
-              <h3 className="font-medium text-gray-900 mb-2">Categories</h3>
+              <h3 className="mb-2 font-medium text-gray-900">Categories</h3>
               <div className="flex flex-wrap gap-2">
                 {listing.tags.map((tag) => (
                   <Link
                     key={tag}
                     to={`/search?tag=${encodeURIComponent(tag)}`}
-                    className="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full hover:bg-purple-200 transition-colors"
+                    className="px-3 py-1 text-sm text-purple-800 transition-colors bg-purple-100 rounded-full hover:bg-purple-200"
                   >
                     {tag}
                   </Link>
@@ -284,24 +290,24 @@ const ListingDetailsPage: React.FC = () => {
           )}
 
           {/* Current Bid and Time */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Current Highest Bid</p>
-                <p className="text-3xl font-bold text-emerald-600 flex items-center">
+                <p className="mb-1 text-sm text-gray-600">Current Highest Bid</p>
+                <p className="flex items-center text-3xl font-bold text-emerald-600">
                   <CurrencyDollarIcon className="w-8 h-8 mr-2" />
                   {getHighestBid()}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">{listing._count?.bids || 0} bids</p>
+                <p className="mt-1 text-sm text-gray-600">{listing._count?.bids || 0} bids</p>
               </div>
 
               <div>
-                <p className="text-sm text-gray-600 mb-1">Time Remaining</p>
-                <p className="text-2xl font-bold text-amber-600 flex items-center">
+                <p className="mb-1 text-sm text-gray-600">Time Remaining</p>
+                <p className="flex items-center text-2xl font-bold text-amber-600">
                   <ClockIcon className="w-6 h-6 mr-2" />
                   {formatTimeRemaining(listing.endsAt)}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="mt-1 text-sm text-gray-600">
                   Ends: {new Date(listing.endsAt).toLocaleDateString()} at {new Date(listing.endsAt).toLocaleTimeString()}
                 </p>
               </div>
@@ -310,12 +316,12 @@ const ListingDetailsPage: React.FC = () => {
 
           {/* Bidding Form */}
           {isAuthenticated && !isAuctionEnded() && (
-            <form onSubmit={handlePlaceBid} className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
-              <h3 className="font-semibold text-emerald-900 mb-4">Place Your Bid</h3>
+            <form onSubmit={handlePlaceBid} className="p-6 border rounded-lg bg-emerald-50 border-emerald-200">
+              <h3 className="mb-4 font-semibold text-emerald-900">Place Your Bid</h3>
               
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="bidAmount" className="block text-sm font-medium text-emerald-700 mb-1">
+                  <label htmlFor="bidAmount" className="block mb-1 text-sm font-medium text-emerald-700">
                     Bid Amount (Credits)
                   </label>
                     <input
@@ -324,17 +330,17 @@ const ListingDetailsPage: React.FC = () => {
                     min={getMinBidAmount()}
                     value={bidAmount || ''}
                     onChange={(e) => setBidAmount(Number(e.target.value))}
-                    className="w-full px-4 py-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors bg-white"
+                    className="w-full px-4 py-3 transition-colors bg-white border rounded-lg border-emerald-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     placeholder={`Minimum: ${getMinBidAmount()} credits`}
                       required
                     />
-                  <p className="text-xs text-emerald-600 mt-1">
+                  <p className="mt-1 text-xs text-emerald-600">
                     You have {user?.credits || 0} credits available
                   </p>
                 </div>
 
                 {bidError && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  <div className="px-4 py-3 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50">
                     {bidError}
                   </div>
                 )}
@@ -342,11 +348,11 @@ const ListingDetailsPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isBidding || isAuctionEnded()}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 px-6 rounded-lg font-semibold transition-all flex items-center justify-center"
+                  className="flex items-center justify-center w-full px-6 py-3 font-semibold text-white transition-all rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isBidding ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      <div className="w-5 h-5 mr-2 border-b-2 border-white rounded-full animate-spin"></div>
                       Placing Bid...
                     </>
                   ) : (
@@ -359,11 +365,11 @@ const ListingDetailsPage: React.FC = () => {
 
           {/* Auction Ended Message */}
           {isAuctionEnded() && (
-            <div className="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
-              <h3 className="font-semibold text-gray-900 mb-2">Auction Ended</h3>
+            <div className="p-6 text-center bg-gray-100 border border-gray-200 rounded-lg">
+              <h3 className="mb-2 font-semibold text-gray-900">Auction Ended</h3>
               <p className="text-gray-600">This auction has concluded.</p>
               {getHighestBid() > 0 && (
-                <p className="text-emerald-600 font-medium mt-2">
+                <p className="mt-2 font-medium text-emerald-600">
                   Final bid: {getHighestBid()} credits
                 </p>
               )}
@@ -372,19 +378,19 @@ const ListingDetailsPage: React.FC = () => {
 
           {/* Login Prompt */}
           {!isAuthenticated && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-              <h3 className="font-semibold text-gray-900 mb-2">Want to Bid?</h3>
-              <p className="text-gray-600 mb-4">Sign in to place bids on this auction.</p>
-              <div className="flex gap-3 justify-center">
+            <div className="p-6 text-center border border-gray-200 rounded-lg bg-gray-50">
+              <h3 className="mb-2 font-semibold text-gray-900">Want to Bid?</h3>
+              <p className="mb-4 text-gray-600">Sign in to place bids on this auction.</p>
+              <div className="flex justify-center gap-3">
                 <Link
                   to="/login"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium transition-all"
+                  className="px-6 py-2 font-medium text-white transition-all rounded-lg bg-emerald-600 hover:bg-emerald-700"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium transition-all"
+                  className="px-6 py-2 font-medium text-gray-700 transition-all bg-gray-100 rounded-lg hover:bg-gray-200"
                 >
                   Create Account
                 </Link>
@@ -395,8 +401,8 @@ const ListingDetailsPage: React.FC = () => {
       </div>
 
       {/* Bid History */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-100 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Bid History</h2>
+      <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-md">
+        <h2 className="mb-6 text-xl font-semibold text-gray-900">Bid History</h2>
         
         {listing.bids && listing.bids.length > 0 ? (
           <div className="space-y-3">
@@ -416,10 +422,10 @@ const ListingDetailsPage: React.FC = () => {
                       <img
                         src={bid.bidder.avatar.url}
                         alt={bid.bidder.avatar.alt || bid.bidder.name}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500"
+                        className="object-cover w-10 h-10 border-2 rounded-full border-emerald-500"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-600">
                         <UserIcon className="w-6 h-6 text-white" />
                     </div>
                     )}
@@ -427,7 +433,7 @@ const ListingDetailsPage: React.FC = () => {
                       <p className="font-medium text-gray-900">
                         {bid.bidder?.name || 'Anonymous'}
                         {index === 0 && (
-                          <span className="ml-2 px-2 py-1 bg-emerald-600 text-white text-xs rounded-full">
+                          <span className="px-2 py-1 ml-2 text-xs text-white rounded-full bg-emerald-600">
                             Highest Bid
                           </span>
                         )}
@@ -449,8 +455,8 @@ const ListingDetailsPage: React.FC = () => {
               ))}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <div className="text-gray-400 mb-4">
+          <div className="py-8 text-center">
+            <div className="mb-4 text-gray-400">
               <ClockIcon className="w-12 h-12 mx-auto" />
             </div>
             <p className="text-gray-500">No bids yet. Be the first to bid!</p>
